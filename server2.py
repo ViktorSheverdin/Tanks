@@ -4,6 +4,7 @@ import pickle
 from _thread import *
 from network import Network
 from player import Player
+from random import randint
 
 server = "10.65.0.202"
 port = 5555
@@ -26,28 +27,28 @@ s.listen()
 print("Waiting for connection, Server Started")
 
 def threaded_client(conn, playerID, gameID):
-    new_player = Player(playerID, 50, 50, (255,0,200), 100, 100)
+    new_player = Player(playerID, 150, 150, (255,0,200), 100, 100)
 
     print("Sending PlayerID")
     players_on_server.append(new_player)
     conn.send(pickle.dumps(new_player))
-    playerID += 1
     print("PlayerID was sent")
     
     reply = ""
     while True:
         try:
-            conn.send(pickle.dumps(players_on_server))
             data = pickle.loads(conn.recv(2048))
             #print("Received data when connected :\n", data)
             players_on_server[playerID] = data
             if not data:
                 print("Disconnected from the server")
+                #players_on_server.pop(int(playerID))
                 break
             else:
                 reply = "Confirmation of connected"
                 print("Received: ", data)
                 print("Current player ID is: ", playerID)
+                print("All players on the server: \n", players_on_server)
             
             conn.sendall(pickle.dumps(players_on_server))
             #conn.send(pickle.dumps(players_on_server))
@@ -64,4 +65,5 @@ while True:
 
     # After the connection was accepted, start multythreading so many connections could be established simoltaniously
     start_new_thread(threaded_client, (conn, playerID, gameID))
+    playerID += 1
     #conn.send(pickle.dumps(players_on_server))

@@ -7,10 +7,15 @@ class Network:
         self.server = "10.65.0.202"
         self.port = 5555
         self. addr = (self.server, self.port)
-        self.playerID = self.connect()
+        self.playerInfo = self.connect()
 
-    def getPlayerID(self):
-        return self.playerID
+    def getPlayerInfo(self):
+        return self.playerInfo
+
+    def getAllPlayers(self):
+        all_players_list = pickle.loads(self.client.recv(2048))
+
+        return all_players_list
 
     def connect(self):
         try:
@@ -21,11 +26,11 @@ class Network:
 
     def send(self, data):
         try:
-            self.client.send(str.encode(data))
+            self.client.send(pickle.dumps(data))
             return pickle.loads(self.client.recv(2048))
         except socket.error as e:
             print(e)
 
-n = Network()
-print("PlayerID is: ", n.getPlayerID())
-#n.send("Nenwork module is connected")
+# n = Network()
+# print("PlayerID is: ", n.getPlayerID())
+# n.send("Network module is connected")
