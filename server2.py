@@ -38,19 +38,18 @@ def threaded_client(conn, playerID, gameID):
     while True:
         try:
             data = pickle.loads(conn.recv(2048))
-            #print("Received data when connected :\n", data)
-            players_on_server[playerID] = data
+            print("Received data when connected :\n", data)
+            if (data.playerID == playerID):
+                players_on_server[playerID] = data
+            print("players_on_server",players_on_server[playerID])
             if not data:
                 print("Disconnected from the server")
-                #players_on_server.pop(int(playerID))
+                players_on_server.pop(int(data.playerID))
                 break
             else:
-                reply = "Confirmation of connected"
-                print("Received: ", data)
-                print("Current player ID is: ", playerID)
                 print("All players on the server: \n", players_on_server)
             
-            conn.sendall(pickle.dumps(players_on_server))
+                conn.sendall(pickle.dumps(players_on_server))
             #conn.send(pickle.dumps(players_on_server))
         except:
             break
