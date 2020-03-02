@@ -9,7 +9,7 @@ from random import randint
 server = "10.65.0.202"
 port = 5555
 gameID = 0
-playerID = 0
+new_playerID = 0
 games = {}
 #players_on_server = []
 players_on_server = {}
@@ -43,7 +43,9 @@ def threaded_client(conn, playerID):
             data = pickle.loads(conn.recv(2048))
             print("Received data when connected :\n", data)
             for key, value in data.items():
-                if players_on_server[value.playerID] == playerID:
+                print("Key: ",key, " Value: ", value, " PlayerID: ", playerID, " players_on_server[value.playerID]", players_on_server[value.playerID])
+                if players_on_server[value.playerID].playerID == playerID:
+                #if players_on_server[key].playerID == playerID:
                     print("Received playerID: ",value)
                     #for players in players_on_server:
                     #players_on_server.update(players_on_server[playerID] = value)
@@ -52,7 +54,7 @@ def threaded_client(conn, playerID):
                     print("New players_on_server: ", players_on_server)
                     # if (value.playerID == playerID):                
                     #     players_on_server.update(playerID = data)
-            print("players_on_server",players_on_server[playerID])
+            print("players_on_server[playerID]",players_on_server[playerID])
             if not data:
                 print("Disconnected from the server")
                 #players_on_server.pop(int(data.playerID))
@@ -80,6 +82,6 @@ while True:
     print("Connected to: ", addr)
 
     # After the connection was accepted, start multythreading so many connections could be established simoltaniously
-    start_new_thread(threaded_client, (conn, playerID))
-    playerID += 1
+    start_new_thread(threaded_client, (conn, new_playerID))
+    new_playerID += 1
     #conn.send(pickle.dumps(players_on_server))
