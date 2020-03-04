@@ -4,13 +4,15 @@ import pickle
 from _thread import *
 from network import Network
 from player import Player
+from random import randint
 
 server = "10.65.0.202"
 port = 5555
 gameID = 0
-playerID = 0
+new_playerID = 0
 games = {}
-players_on_server = []
+information_to_send = {}
+players_on_server = {}
 
 # Creates a socket and init the server
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -25,33 +27,33 @@ except socket.error as e:
 s.listen()
 print("Waiting for connection, Server Started")
 
-def threaded_client(conn, playerID, gameID):
-    new_player = Player(playerID, 50, 50, (255,0,200), 100, 100)
+def threaded_client(conn, playerID):
+    new_player = Player(playerID, 150, 150, (255,0,200), 100, 100)
 
     print("Sending PlayerID")
-    players_on_server.append(new_player)
+    players_on_server.update({new_player.playerID: new_player})
     conn.send(pickle.dumps(new_player))
-    playerID += 1
-    print("PlayerID was sent")
     
     reply = ""
     while True:
         try:
-            conn.send(pickle.dumps(players_on_server))
             data = pickle.loads(conn.recv(2048))
-            #print("Received data when connected :\n", data)
-            players_on_server[playerID] = data
+            for key, value in data.items():
+                if players_on_server[value.playerID].playerID == playerID:
+                    players_on_server[value.playerID] = value
             if not data:
                 print("Disconnected from the server")
                 break
             else:
-                reply = "Confirmation of connected"
-                print("Received: ", data)
-                print("Current player ID is: ", playerID)
-            
-            conn.sendall(pickle.dumps(players_on_server))
-            #conn.send(pickle.dumps(players_on_server))
+                print("All players on the server: \n", players_on_server)
+                conn.sendall(pickle.dumps(players_on_server))
         except:
+            print("Disconnected from the server")
+            try:
+                del players_on_server[playerID]
+            except:
+                print("Name was not found")
+                break
             break
 
     print("Connection lost")
@@ -63,5 +65,6 @@ while True:
     print("Connected to: ", addr)
 
     # After the connection was accepted, start multythreading so many connections could be established simoltaniously
-    start_new_thread(threaded_client, (conn, playerID, gameID))
+    start_new_thread(threaded_client, (conn, new_playerID))
+    new_playerID += 1
     #conn.send(pickle.dumps(players_on_server))
