@@ -1,6 +1,7 @@
 import pygame
 class Bullet():
-    def __init__(self, x, y, direction):
+    def __init__(self, playerID, x, y, direction):
+        self.playerID = playerID
         self.vel = 1
         self.x = x
         self.y = y
@@ -9,14 +10,24 @@ class Bullet():
         self.color = (100,100,100)
         self.direction = direction
         self.rect = (self.x,self.y,self.width,self.height)
-        self.exist()
+        self.id_count = 0
+        self.bullet_id = "{0}b{1}".format(self.playerID,self.id_count)
+        self.increase_id_count()
 
     def __str__(self):
-        return "Speed: %s \n X: %s Y: %s \n Width: %s \n Height: %s \n Color: %s" %(self.vel,self.x,self.y,self.width,self.height,self.color)
+        return "PlayerID: %s \n BulletID: %s \n Speed: %s \n X: %s Y: %s \n Width: %s \n Height: %s \n Color: %s" %(self.playerID,self.bullet_id,self.vel,self.x,self.y,self.width,self.height,self.color)
 
     def __repr__(self):
-        return "Speed: %s \n X: %s Y: %s \n Width: %s \n Height: %s \n Color: %s" %(self.vel,self.x,self.y,self.width,self.height,self.color)
+        return "PlayerID: %s \n BulletID: %s \n Speed: %s \n X: %s Y: %s \n Width: %s \n Height: %s \n Color: %s" %(self.playerID,self.bullet_id,self.vel,self.x,self.y,self.width,self.height,self.color)
 
+    def get_bullet(self):
+        #return {self.playerID,self.bullet_id,self.vel,self.x,self.y,self.width,self.height,self.color}
+        return "PlayerID: %s \n BulletID: %s \n Speed: %s \n X: %s Y: %s \n Width: %s \n Height: %s \n Color: %s" %(self.playerID,self.bullet_id,self.vel,self.x,self.y,self.width,self.height,self.color)
+
+
+    def increase_id_count(self):
+        self.id_count += 1
+    
     def check_for_collision(self,filed_width,filed_height):
         bullet_moves = True
         #if self.x > filed_width-self.vel:
@@ -45,14 +56,18 @@ class Bullet():
 
         self.update()
 
-    def exist(self):
-        bullet_moves = True
-        while bullet_moves:
-            print("Start the loop")
-            bullet_moves = self.check_for_collision(500,500)
-            self.move_bullet()
-            print("Bullet moves. X: %s Y: %s " %(self.x, self.y))
-            #self.draw(pygame.display.set_mode((500,500)))
+    # def exist(self):
+    #     bullet_moves = True
+    #     while bullet_moves:
+    #         print("Start the loop")
+    #         bullet_moves = self.check_for_collision(500,500)
+    #         self.move_bullet()
+    #         print("Bullet moves. X: %s Y: %s " %(self.x, self.y))
+    #         #self.draw(pygame.display.set_mode((500,500)))
+
+    def bullet_exists(self):
+        self.check_for_collision(500,500)
+        self.move_bullet()
 
     def draw(self, win):
         pygame.draw.rect(win,self.color, self.rect)

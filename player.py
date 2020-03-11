@@ -11,6 +11,7 @@ class Player:
         self.height = height
         self.current_direction = "NORTH"
         self.bullets = []
+        self.bullet_id = 0
         
         self.rect = (x,y,width,height)
         self.vel = 1
@@ -54,10 +55,12 @@ class Player:
         # if keys[pygame.K_SPACE]:
             # bullet_x = self.x
             # bullet_y = self.y
-        new_bullet = Bullet(self.x, self.y, self.current_direction)
-        self.bullets.append(new_bullet)
+        new_bullet = Bullet(self.playerID,self.x, self.y, self.current_direction)
+        
+        #self.bullets.append(new_bullet)
         #new_bullet.exist()
-        print("Bullet was shot: ", new_bullet)
+        
+        return new_bullet
 
     def get_list_of_bullets(self):
         return self.bullets
