@@ -55,7 +55,10 @@ class Player:
         # if keys[pygame.K_SPACE]:
             # bullet_x = self.x
             # bullet_y = self.y
-        new_bullet = Bullet(self.playerID,self.x, self.y, self.current_direction)
+        bullet_id = "{0}b{1}".format(self.playerID,self.bullet_id)
+        new_bullet = Bullet(bullet_id,self.playerID,self.x, self.y, self.current_direction)
+        self.bullet_id+=1
+        # return new_bullet
         
         #self.bullets.append(new_bullet)
         #new_bullet.exist()

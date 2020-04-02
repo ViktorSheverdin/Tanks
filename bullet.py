@@ -1,8 +1,8 @@
 import pygame
 class Bullet():
-    def __init__(self, playerID, x, y, direction):
+    def __init__(self, bullet_id, playerID, x, y, direction):
         self.playerID = playerID
-        self.vel = 1
+        self.vel = 10
         self.x = x
         self.y = y
         self.width = 12
@@ -10,19 +10,20 @@ class Bullet():
         self.color = (100,100,100)
         self.direction = direction
         self.rect = (self.x,self.y,self.width,self.height)
-        self.id_count = 0
-        self.bullet_id = "{0}b{1}".format(self.playerID,self.id_count)
-        self.increase_id_count()
+        # self.id_count = 0
+        # self.bullet_id = "{0}b{1}".format(self.playerID,self.id_count)
+        # self.increase_id_count()
+        self.bullet_id = bullet_id
 
     def __str__(self):
-        return "PlayerID: %s \n BulletID: %s \n Speed: %s \n X: %s Y: %s \n Width: %s \n Height: %s \n Color: %s" %(self.playerID,self.bullet_id,self.vel,self.x,self.y,self.width,self.height,self.color)
+        return "PlayerID: %s \n BulletID: %s \n Speed: %s \n X: %s Y: %s \n Width: %s \n Height: %s \n Color: %s \n Direction: %s" %(self.playerID,self.bullet_id,self.vel,self.x,self.y,self.width,self.height,self.color,self.direction)
 
     def __repr__(self):
-        return "PlayerID: %s \n BulletID: %s \n Speed: %s \n X: %s Y: %s \n Width: %s \n Height: %s \n Color: %s" %(self.playerID,self.bullet_id,self.vel,self.x,self.y,self.width,self.height,self.color)
+        return "PlayerID: %s \n BulletID: %s \n Speed: %s \n X: %s Y: %s \n Width: %s \n Height: %s \n Color: %s \n Direction: %s" %(self.playerID,self.bullet_id,self.vel,self.x,self.y,self.width,self.height,self.color,self.direction)
 
     def get_bullet(self):
         #return {self.playerID,self.bullet_id,self.vel,self.x,self.y,self.width,self.height,self.color}
-        return "PlayerID: %s \n BulletID: %s \n Speed: %s \n X: %s Y: %s \n Width: %s \n Height: %s \n Color: %s" %(self.playerID,self.bullet_id,self.vel,self.x,self.y,self.width,self.height,self.color)
+        return "PlayerID: %s \n BulletID: %s \n Speed: %s \n X: %s Y: %s \n Width: %s \n Height: %s \n Color: %s \n Direction: %s" %(self.playerID,self.bullet_id,self.vel,self.x,self.y,self.width,self.height,self.color,self.direction)
 
 
     def increase_id_count(self):
@@ -45,16 +46,22 @@ class Bullet():
         return bullet_moves
 
     def move_bullet(self):
+        print("Moving bullet")
         if self.direction == "EAST":
+            print("Before, self.x is: %s" %(self.x))
             self.x -= self.vel
+            print("After, self.x is: %s" %(self.x))
         elif self.direction == "WEST":
             self.x += self.vel
         elif self.direction == "NORTH":
             self.y -= self.vel
         elif self.direction == "SOUTH":
             self.y += self.vel
+        
+        print("new x: %s new y: %s"%(self.x,self.y))
 
         self.update()
+        return (self.x, self.y)
 
     # def exist(self):
     #     bullet_moves = True
@@ -66,8 +73,11 @@ class Bullet():
     #         #self.draw(pygame.display.set_mode((500,500)))
 
     def bullet_exists(self):
-        self.check_for_collision(500,500)
-        self.move_bullet()
+        if self.check_for_collision(500,500):
+            self.move_bullet()
+            return True
+        else:
+            return False
 
     def draw(self, win):
         pygame.draw.rect(win,self.color, self.rect)

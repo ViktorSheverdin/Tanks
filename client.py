@@ -22,6 +22,7 @@ def redraw_window(window, players_on_server,bullets_on_server):
         #print("updated_bullet: %s" %(updated_bullet))
         #updated_bullet.draw(window)
         #bullet_value = bullet_value.get_bullet()
+        #bullet_value.move_bullet()
         bullet_value.draw(window)
         #bullet["new_bullet"].draw(window)
     pygame.display.update()
@@ -52,9 +53,10 @@ def main():
     network_module = Network()
     clock = pygame.time.Clock()
     obj_player = network_module.getPlayerInfo()
-    bullets_on_server = {}
+    #bullets_on_server = {}
     all_data_to_send = {}
     all_players_bullets = {}
+    bullets_to_delete = {}
     isRunning = True
     while isRunning:
         clock.tick(60)
@@ -69,6 +71,7 @@ def main():
         #all_data_to_send.update({"bullets": bullets})
         #print("all_data_to_send: %s" %(all_data_to_send))
         data_from_server = get_data_from_server(network_module,all_data_to_send)
+        #all_players_bullets = {}
         print("data_from_server: %s" %(data_from_server))
         #players_on_server = get_players_on_server(network_module,obj_player)
         players_on_server = data_from_server["players_on_server"]        
@@ -77,18 +80,45 @@ def main():
         bullets_on_server = data_from_server["bullets"]
         for each_bullet_key,each_bullet_value in bullets_on_server.items():
             #each_bullet_value.bullet_exists()
+            # new_x, new_y = each_bullet_value.move_bullet()
             #each_bullet_value.move_bullet()
-            print("each_bullet exists: %s" %(each_bullet_value))
+
+            # each_bullet_value.bullet_exists()
+            # all_players_bullets.update({each_bullet_key:each_bullet_value})
+
+            if each_bullet_value.bullet_exists():
+                all_players_bullets.update({each_bullet_key:each_bullet_value})
+            else:
+                print("Delete the bullet")
+                bullets_to_delete.update({each_bullet_key:each_bullet_value})
+                
+        # for to_delete in delete:
+        #     del all_players_bullets[to_delete]
+            #del to_delete
+
+                # del each_bullet_value
+                # try:
+                #     del all_players_bullets[each_bullet_value]
+                # except:
+                #     print("Name was not found")
+
+            # print("each_bullet exists: %s" %(each_bullet_value))
+            # print("bullets_on_server[each_bullet_key].x: %s"%(bullets_on_server[each_bullet_key].x))
+            # bullets_on_server[each_bullet_key].x = new_x
+            # bullets_on_server[each_bullet_value.y] = each_bullet_value.y
+            # print("bullet_on_server_x: %s"%(bullets_on_server[each_bullet_value.x]))
 
         redraw_window(window,players_on_server,bullets_on_server)
 
         for event in pygame.event.get():
+            keys = pygame.key.get_pressed()
             if event.type == pygame.QUIT:
                 isRunning = False
                 pygame.quit()
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                print("Mouse is clicked")
+            # if event.type == pygame.K_SPACE:
+            if keys[pygame.K_SPACE]:
+                print("Space is pressed")
                 new_bullet = obj_player.shoot()
                 print("Bullet was shot: ", new_bullet)
                 print("Get bullet: ", new_bullet.get_bullet)
