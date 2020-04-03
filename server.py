@@ -43,27 +43,12 @@ def threaded_client(conn, playerID):
             data = pickle.loads(conn.recv(2048))
             print("data: ", data["player"].playerID)
             print("data: ", data)
-            #bullets.clear()
             print("bullets: %s"%(bullets))
             players_on_server[data["player"].playerID] = data["player"]
             for each_bullet_key,each_bullet_value in data["bullets"].items():
-                #bullets.append(each_bullet)
-                #bullets = {}
                 print("each_bullet: %s"%(each_bullet_value))
-                #each_bullet_value.bullet_exists()
                 bullets.update({each_bullet_key:each_bullet_value})
                 print(bullets)
-            
-            # for each_bullet_key,each_bullet_value in bullets.items():            
-            #     each_bullet_value.bullet_exists()
-
-            
-
-            # for key, value in data.items():
-            #     print("value: %s" %(value))
-            #     if players_on_server[value.playerID].playerID == playerID:
-            #         players_on_server[value.playerID] = value
-
 
             if not data:
                 print("Disconnected from the server")
@@ -72,10 +57,8 @@ def threaded_client(conn, playerID):
                 print("All players on the server: \n", players_on_server)
                 information_to_send.update({'players_on_server':players_on_server})
                 information_to_send.update({'bullets':bullets})
-                #conn.sendall(pickle.dumps(players_on_server))
                 print("information_to_send: %s"%(information_to_send))
                 conn.sendall(pickle.dumps(information_to_send))
-                # bullets = {}
                 print("Everything was sent")
         except:
             print("Disconnected from the server")
@@ -97,4 +80,3 @@ while True:
     # After the connection was accepted, start multythreading so many connections could be established simoltaniously
     start_new_thread(threaded_client, (conn, new_playerID))
     new_playerID += 1
-    #conn.send(pickle.dumps(players_on_server))
