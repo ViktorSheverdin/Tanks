@@ -41,25 +41,23 @@ def threaded_client(conn, playerID):
     while True:
         try:
             data = pickle.loads(conn.recv(2048))
-            print("data: ", data["player"].playerID)
-            print("data: ", data)
-            print("bullets: %s"%(bullets))
             players_on_server[data["player"].playerID] = data["player"]
+
             for each_bullet_key,each_bullet_value in data["bullets"].items():
-                print("each_bullet: %s"%(each_bullet_value))
-                bullets.update({each_bullet_key:each_bullet_value})
-                print(bullets)
+                if bool(each_bullet_value.exist):
+                    bullets.update({each_bullet_key:each_bullet_value})
+                elif not bool(each_bullet_value.exist):
+                    bullets.update({each_bullet_key:each_bullet_value})
+                    del bullets[each_bullet_key]
 
             if not data:
                 print("Disconnected from the server")
                 break
             else:
-                print("All players on the server: \n", players_on_server)
                 information_to_send.update({'players_on_server':players_on_server})
                 information_to_send.update({'bullets':bullets})
-                print("information_to_send: %s"%(information_to_send))
+                # print("information_to_send: %s"%(information_to_send))
                 conn.sendall(pickle.dumps(information_to_send))
-                print("Everything was sent")
         except:
             print("Disconnected from the server")
             try:

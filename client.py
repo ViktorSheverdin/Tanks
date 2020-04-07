@@ -13,8 +13,6 @@ def redraw_window(window, players_on_server,bullets_on_server):
     for each_player_key, each_player_value in players_on_server.items():
         each_player_value.draw(window)
     for bullet_key,bullet_value in bullets_on_server.items():
-        print("bullets_on_server: %s" %(bullets_on_server))
-        print("Bullet type is: ", type(bullet_value))
         bullet_value.draw(window)
     pygame.display.update()
 
@@ -24,21 +22,21 @@ def get_data_from_server(network_module, all_data_to_send):
     #print("data_from_the_server: %s"%(data_from_server))
     return data_from_server
 
-def get_players_on_server(network_module,obj_player):
-    players_on_server = network_module.send({obj_player.playerID: obj_player})["players_on_server"]
-    # print("#######################################")
-    # print("players_on_server: ",players_on_server)
-    # print("#######################################")
-    return players_on_server
+# def get_players_on_server(network_module,obj_player):
+#     players_on_server = network_module.send({obj_player.playerID: obj_player})["players_on_server"]
+#     # print("#######################################")
+#     # print("players_on_server: ",players_on_server)
+#     # print("#######################################")
+#     return players_on_server
 
-def get_bullets_on_server(network_module,obj_player,bullet):    
-    bullet_id = "{0}b{1}".format(obj_player.playerID,bullet.id)
-    print("bullet_id: %s" %(bullet_id))
-    bullets = network_module.send({bullet_id: bullet})["bullets"]
-    print("#######################################")
-    print("bullets: ",bullets)
-    print("#######################################")
-    return bullets
+# def get_bullets_on_server(network_module,obj_player,bullet):    
+#     bullet_id = "{0}b{1}".format(obj_player.playerID,bullet.id)
+#     print("bullet_id: %s" %(bullet_id))
+#     bullets = network_module.send({bullet_id: bullet})["bullets"]
+#     print("#######################################")
+#     print("bullets: ",bullets)
+#     print("#######################################")
+#     return bullets
 
 def main():
     network_module = Network()
@@ -46,7 +44,6 @@ def main():
     obj_player = network_module.getPlayerInfo()
     all_data_to_send = {}
     all_players_bullets = {}
-    bullets_to_delete = {}
     isRunning = True
     while isRunning:
         clock.tick(60)
@@ -54,16 +51,12 @@ def main():
         
         all_data_to_send.update({"player": obj_player})
         all_data_to_send.update({"bullets":all_players_bullets})
-        all_data_to_send.update({"bullets_to_delete":all_players_bullets})
         
         data_from_server = get_data_from_server(network_module,all_data_to_send)
         players_on_server = data_from_server["players_on_server"]
         bullets_on_server = data_from_server["bullets"]
+        all_players_bullets.clear()
 
-        for each_bullet_key,each_bullet_value in bullets_on_server.items():
-            if each_bullet_value.bullet_exists():
-                all_players_bullets.update({each_bullet_key:each_bullet_value})
-                
         redraw_window(window,players_on_server,bullets_on_server)
 
         for event in pygame.event.get():
